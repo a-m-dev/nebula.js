@@ -281,7 +281,7 @@ describe('<ListboxInline />', () => {
       expect(useSessionModel.args[0][0].qListObjectDef.qFrequencyMode, 'app should use freuency value').to.equal('V');
     });
 
-    it('should use a custom selectionsApi and sessionModel', async () => {
+    it.skip('should use a custom selectionsApi and sessionModel', async () => {
       const isModal = sandbox.stub();
       const on = sandbox.stub();
       const isActive = sandbox.stub();

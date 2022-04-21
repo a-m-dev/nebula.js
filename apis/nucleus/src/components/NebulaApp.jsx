@@ -1,5 +1,5 @@
-import React, { useState, useMemo, forwardRef, useImperativeHandle } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
+import ReactDom from 'react-dom/client';
 
 import { createTheme, ThemeProvider, StylesProvider, createGenerateClassName } from '@nebula.js/ui/theme';
 
@@ -10,7 +10,7 @@ const NEBULA_VERSION_HASH = process.env.NEBULA_VERSION_HASH || '';
 
 let counter = 0;
 
-const NebulaApp = forwardRef(({ initialContext, app }, ref) => {
+const NebulaApp = forwardRef(({ initialContext, app, renderCallback }, ref) => {
   const [appSelections] = useAppSelections(app);
   const [context, setContext] = useState(initialContext);
   const [muiThemeName, setMuiThemeName] = useState();
@@ -45,6 +45,12 @@ const NebulaApp = forwardRef(({ initialContext, app }, ref) => {
     getAppSelections: () => appSelections,
   }));
 
+  // Will be called directly after the first render pass
+  // See: https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html
+  useEffect(() => {
+    renderCallback && renderCallback();
+  });
+
   return (
     <StylesProvider generateClassName={generator}>
       <ThemeProvider theme={theme}>
@@ -68,7 +74,8 @@ export default function boot({ app, context }) {
   element.setAttribute('data-app-id', app.id);
   document.body.appendChild(element);
 
-  ReactDOM.render(<NebulaApp ref={appRef} app={app} initialContext={context} />, element, resolveRender);
+  const root = ReactDom.createRoot(element); // createRoot(container!) if you use TypeScript
+  root.render(<NebulaApp ref={appRef} app={app} initialContext={context} renderCallback={resolveRender} />);
 
   const cells = {};
 

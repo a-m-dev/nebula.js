@@ -2,11 +2,11 @@
 import React from 'react';
 import { create, act } from 'react-test-renderer';
 import { StylesProvider, ThemeProvider, createTheme } from '@nebula.js/ui/theme';
-
-const mockedReactDOM = { render: sinon.spy() };
+const mockedRoot = { render: sinon.spy() };
+const mockedReactDOM = { createRoot: () => mockedRoot };
 const [{ default: boot, NebulaApp }] = aw.mock(
   [
-    [require.resolve('react-dom'), () => mockedReactDOM],
+    [require.resolve('react-dom/client'), () => mockedReactDOM],
     [require.resolve('../../hooks/useAppSelections'), () => () => [{}]],
   ],
   ['../NebulaApp']
@@ -18,7 +18,7 @@ describe('Boot NebulaApp', () => {
   let sandbox;
 
   beforeEach(() => {
-    mockedReactDOM.render.resetHistory();
+    mockedRoot.render.resetHistory();
     sandbox = sinon.createSandbox();
     const mockedElement = {
       style: {},
@@ -37,7 +37,7 @@ describe('Boot NebulaApp', () => {
 
   it('should call ReactDOM render', () => {
     boot({ app: { id: 'foo' } });
-    expect(mockedReactDOM.render.callCount).to.equal(1);
+    expect(mockedRoot.render.callCount).to.equal(1);
   });
   it('should return api', () => {
     const [api] = boot({ app: { id: 'foo' } });
@@ -55,7 +55,7 @@ describe('Boot NebulaApp', () => {
     };
 
     await act(() => {
-      mockedReactDOM.render.callArg(2);
+      mockedRoot.render.args[0][0].props.renderCallback();
       api.add('foo');
       return rendered;
     });
@@ -70,7 +70,7 @@ describe('Boot NebulaApp', () => {
     };
 
     await act(() => {
-      mockedReactDOM.render.callArg(2);
+      mockedRoot.render.args[0][0].props.renderCallback();
       api.remove('foo');
       return rendered;
     });
@@ -85,7 +85,7 @@ describe('Boot NebulaApp', () => {
     };
 
     await act(() => {
-      mockedReactDOM.render.callArg(2);
+      mockedRoot.render.args[0][0].props.renderCallback();
       api.setMuiThemeName('wh0p');
       return rendered;
     });
@@ -100,7 +100,7 @@ describe('Boot NebulaApp', () => {
     };
 
     await act(() => {
-      mockedReactDOM.render.callArg(2);
+      mockedRoot.render.args[0][0].props.renderCallback();
       api.context('ctx');
       return rendered;
     });
@@ -115,7 +115,7 @@ describe('Boot NebulaApp', () => {
     };
 
     await act(() => {
-      mockedReactDOM.render.callArg(2);
+      mockedRoot.render.args[0][0].props.renderCallback();
       api.getAppSelections();
       return rendered;
     });

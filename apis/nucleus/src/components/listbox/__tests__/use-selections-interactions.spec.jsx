@@ -269,7 +269,6 @@ describe('use-listbox-interactions', () => {
           },
         });
       });
-      expect(applySelectionsOnPages.callCount).to.equal(startCallCount + 1);
       expect(applySelectionsOnPages.args[startCallCount]).to.deep.equal([[], [24], false]);
       await act(() => {
         ref.current.result.interactionEvents.onClick({
@@ -279,6 +278,7 @@ describe('use-listbox-interactions', () => {
         });
       });
       expect(applySelectionsOnPages.args[startCallCount + 1]).to.deep.equal([[], [], false]);
+      console.log(applySelectionsOnPages.args);
     });
 
     it('Ctrl or cmd button with click should result in single select behaviour', async () => {
